@@ -1,0 +1,23 @@
+{% extends "core/base.html" %}
+
+{% block title %}Quiz Result{% endblock %}
+
+{% block content %}
+<section class="container mx-auto px-6 py-10">
+    <h1 class="text-3xl font-bold mb-6 text-center">Quiz Result: {{ submission.quiz.title }}</h1>
+    <p class="text-center text-lg mb-6">{{ submission.user_name }}, your score is <span class="font-semibold">{{ submission.score }}/{{ total_questions }}</span></p>
+
+    <div class="space-y-4">
+        {% for answer in answers %}
+        <div class="bg-white p-4 rounded-lg shadow">
+            <p class="font-semibold">{{ forloop.counter }}. {{ answer.question.text }}</p>
+            <p>Your answer: <span class="{% if answer.is_correct %}text-green-600{% else %}text-red-600{% endif %}">{{ answer.answer }}</span></p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="text-center mt-6">
+        <a href="{% url 'quiz_list' %}" class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 transition">Back to Quizzes</a>
+    </div>
+</section>
+{% endblock %}

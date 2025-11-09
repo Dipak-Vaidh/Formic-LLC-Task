@@ -1,0 +1,39 @@
+{% extends "core/base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-blue-600 text-white py-20 rounded-lg shadow-lg">
+    <div class="container mx-auto text-center px-6">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">Welcome to Quiz & Events App</h1>
+        <p class="text-lg md:text-xl mb-8">Test your knowledge and stay updated with upcoming events!</p>
+        <div class="flex justify-center gap-6 flex-wrap">
+            <a href="{% url 'quiz_list' %}" class="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">Browse Quizzes</a>
+            <a href="{% url 'events' %}" class="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">View Events</a>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="mt-16 container mx-auto px-6 grid md:grid-cols-2 gap-8">
+    <div class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition">
+        <h2 class="text-2xl font-bold mb-2">Interactive Quizzes</h2>
+        <p>Take quizzes with dynamic questions, see your score, and improve your knowledge!</p>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition">
+        <h2 class="text-2xl font-bold mb-2">Upcoming Events</h2>
+        <p>Stay updated with the latest events and join the ones you are interested in.</p>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="mt-16 text-center">
+    <h2 class="text-3xl font-bold mb-4">Get Started Now</h2>
+    <p class="text-gray-700 mb-6">Choose a quiz or check out upcoming events to start engaging!</p>
+    <div class="flex justify-center gap-6 flex-wrap">
+        <a href="{% url 'quiz_list' %}" class="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition">Take a Quiz</a>
+        <a href="{% url 'events' %}" class="bg-green-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-green-700 transition">View Events</a>
+    </div>
+</section>
+{% endblock %}

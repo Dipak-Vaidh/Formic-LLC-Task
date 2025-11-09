@@ -1,0 +1,32 @@
+{% extends "core/base.html" %}
+{% block title %}My Quiz History{% endblock %}
+{% block content %}
+<section class="container mx-auto px-6 py-10">
+  <h1 class="text-3xl font-bold mb-6 text-center">My Quiz History</h1>
+
+  {% if submissions %}
+    <div class="overflow-x-auto bg-white shadow-md rounded-lg">
+      <table class="min-w-full text-left">
+        <thead class="bg-blue-600 text-white">
+          <tr>
+            <th class="py-3 px-4">Quiz Title</th>
+            <th class="py-3 px-4">Score</th>
+            <th class="py-3 px-4">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sub in submissions %}
+          <tr class="border-b hover:bg-gray-50">
+            <td class="py-3 px-4 font-medium">{{ sub.quiz.title }}</td>
+            <td class="py-3 px-4">{{ sub.score }}</td>
+            <td class="py-3 px-4 text-gray-600">{{ sub.submitted_at|date:"M d, Y H:i" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-center text-gray-600 mt-6">You haven’t completed any quizzes yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

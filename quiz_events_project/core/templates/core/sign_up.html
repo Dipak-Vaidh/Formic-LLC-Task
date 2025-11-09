@@ -1,0 +1,16 @@
+{% extends "core/base.html" %}
+{% block title %}Sign Up{% endblock %}
+{% block content %}
+<section class="container mx-auto px-6 py-10">
+  <h1 class="text-3xl font-bold mb-6 text-center">Create an Account</h1>
+  <form method="POST" class="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Register</button>
+  </form>
+  <p class="text-center mt-4 text-gray-600">
+    Already have an account?
+    <a href="{% url 'login' %}" class="text-blue-600 hover:underline">Login</a>
+  </p>
+</section>
+{% endblock %}
