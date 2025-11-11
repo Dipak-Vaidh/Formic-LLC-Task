@@ -11,12 +11,12 @@ class Quiz(models.Model):
     def __str__(self):
         return self.title
 
-
 # Question Model
 class Question(models.Model):
     QUESTION_TYPES = (
         ('MCQ', 'Multiple Choice'),
         ('TF', 'True / False'),
+        ('TEXT', 'Text Input'), 
     )
 
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='questions')
@@ -25,10 +25,9 @@ class Question(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.text[:50]  # show first 50 chars
+        return self.text[:50]  
 
-
-# Answer Model
+# Answer Model (Stores correct answers for a Question)
 class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers')
     text = models.CharField(max_length=255)
@@ -37,30 +36,30 @@ class Answer(models.Model):
     def __str__(self):
         return self.text
 
-
-# UserSubmission Model
+# UserSubmission Model (Stores the user's overall quiz attempt details)
 class UserSubmission(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='submissions')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    # user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     score = models.IntegerField(default=0)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.quiz.title} ({self.score})"
 
-
-# UserAnswer Model
+# UserAnswer Model (Stores the specific answer for each question in a submission)
 class UserAnswer(models.Model):
-    submission = models.ForeignKey(UserSubmission, on_delete=models.CASCADE, related_name='user_answers')
+    # This is the parent link, the related_name 'user_answers' is the correct accessor.
+    submission = models.ForeignKey(UserSubmission, on_delete=models.CASCADE, related_name='user_answers') 
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    # answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
-    answer = models.CharField(max_length=255 ,  default="")
+    
+    # FIX: Made nullable (null=True, blank=True) to handle TEXT answers that don't match 
+    # a pre-defined Answer object, preventing database errors.
+    answer = models.ForeignKey(Answer, on_delete=models.CASCADE, null=True, blank=True) 
+    
     is_correct = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.submission.user.username} - {self.question.text[:30]}"
-
 
 # Event Model
 class Event(models.Model):

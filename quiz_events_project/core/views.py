@@ -73,57 +73,54 @@ def events_list(request):
 @login_required
 def quiz_attempt(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id)
-    questions = quiz.questions.all()  # ✅ correct
+    questions = quiz.questions.all()
 
     if request.method == "POST":
         score = 0
 
-        # Create UserSubmission using the logged-in user
         submission = UserSubmission.objects.create(
             quiz=quiz,
-            user=request.user,  # ✅ no 'user_name', use logged-in user
+            user=request.user,
             score=0
         )
 
         for question in questions:
             user_answer = request.POST.get(f"question_{question.id}")
             correct = False
+            answer_obj = None  # default
 
-            if question.question_type == "MCQ":
-                if user_answer:
-                    answer_obj = Answer.objects.get(id=int(user_answer))
-                    correct = answer_obj.is_correct
-                    # Store answer text
-                    UserAnswer.objects.create(
-                        submission=submission,
-                        question=question,
-                        answer=answer_obj.text,
-                        is_correct=correct
-                    )
+            # ✅ MCQ type
+            if question.question_type == "MCQ" and user_answer:
+                answer_obj = Answer.objects.get(id=int(user_answer))
+                correct = answer_obj.is_correct
+
+            # ✅ TEXT type
             elif question.question_type == "TEXT":
-                # Check if user text matches any correct answer
-                answer_obj = Answer.objects.filter(question=question, text__iexact=user_answer).first()
+                # Try to find matching answer (case-insensitive)
+                answer_obj = Answer.objects.filter(
+                    question=question,
+                    text__iexact=user_answer
+                ).first()
+
                 if answer_obj:
                     correct = answer_obj.is_correct
-                    answer_text = answer_obj.text
                 else:
-                    answer_text = user_answer or ""
+                    # No matching Answer object → skip linking FK
+                    answer_obj = None
 
-                # Store text answer
-                UserAnswer.objects.create(
-                    submission=submission,
-                    question=question,
-                    answer=answer_text,
-                    is_correct=correct
-                )
+            # ✅ Always create UserAnswer properly
+            UserAnswer.objects.create(
+                submission=submission,
+                question=question,
+                answer=answer_obj if answer_obj else None,  # must be Answer instance or None
+                is_correct=correct
+            )
 
             if correct:
                 score += 1
 
-        # Update total score
         submission.score = score
         submission.save()
-
         return redirect("quiz_result", submission_id=submission.id)
 
     return render(request, "core/quiz_attempt.html", {"quiz": quiz, "questions": questions})
@@ -131,15 +128,17 @@ def quiz_attempt(request, quiz_id):
 @login_required
 def quiz_result(request, submission_id):
     submission = get_object_or_404(UserSubmission, id=submission_id)
-    answers = submission.useranswer_set.all()
-    total_questions = submission.quiz.questions.count()  # <-- FIXED
+    
+    # FIX: Use the related_name defined in models.py ('user_answers')
+    answers = submission.user_answers.all() 
+    
+    total_questions = submission.quiz.questions.count() 
 
     return render(request, "core/quiz_result.html", {
         "submission": submission,
         "answers": answers,
         "total_questions": total_questions
     })
-
     
 @login_required    
 def events_list(request):
